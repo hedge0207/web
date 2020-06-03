@@ -1,0 +1,15 @@
+
+  <!--interpolation(보간법)-->
+  <div id="app1">
+    {{ hello }}
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script>
+    const app2 = new Vue({
+      el:"#app1",
+      data: {
+        hello: "안녕하세요 Vue!"
+      },
+    })
+  </script>

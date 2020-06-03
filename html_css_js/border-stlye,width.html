@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    /*아래는 border-style*/
+    p {
+      background: palegreen;
+      padding: 10px;
+    }
+    p.d1 {
+      /* four sides */
+      border-style: dashed;
+    }
+    /*2방향 지정*/
+    p.d2 {
+      /* horizontal | vertical */
+      border-style: dotted solid;
+    }
+    /*3방향 지정*/
+    p.d3 {
+      /* top | horizontal | bottom */
+      border-style: hidden double dashed;
+    }
+
+    /*4방향 지정*/
+    p.d4 {
+      /* top | right | bottom | left */
+      border-style: none solid dotted dashed;
+    }
+
+
+
+
+  /*여기서부터는 border-width*/
+  q {
+        background: palegreen;
+        padding: 10px;
+        border-style: solid
+      }
+    q.one {
+      border-width: thin; /* 1px */
+    }
+    q.two {
+      border-width: medium; /* 3px */
+    }
+    q.three {
+      border-width: thick; /* 5px */
+    }
+    q.four {
+      border-width: 15px;
+    }
+    q.five {
+      border-width: 2px 10px 4px 20px;
+  }
+
+
+
+  </style>
+</head>
+<body>
+  <p class="d1">border-style: dashed;</p>
+  <p class="d2">border-style: dotted solid;</p>
+  <p class="d3">border-style: hidden double dashed;</p>
+  <p class="d4">border-style: none solid dotted dashed;</p>
+  <p>initial: 3px</p>
+  <q class="one">thin: 1px</q>
+  <q class="two">medium: 3px</q>
+  <q class="three">thick: 5px</q>
+  <q class="four">15px</q>
+  <q class="five">2px 10px 4px 20px</q>
+
+  </body>
+</html>

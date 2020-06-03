@@ -1,0 +1,78 @@
+<!--CSS 기타 정리-->
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    html{
+      font-size: 14px;
+    }
+    body {
+      text-align: center;
+    }
+    .spx {
+      font-size: 14px;
+      font-weight: bold;
+      padding: 2em; /* 14px * 2 = 28px */
+      background-color: rgba(255, 0, 0, 0.2);
+    }
+
+    .sper {
+      font-size: 120%; /* 14px * 1.2 = 16.8px */
+      font-weight: bold;
+      padding: 2em;    /* 16.8px * 2 = 33.6px */
+      background-color: rgba(111, 0, 255, 0.2);
+    }
+    
+    .sem {
+      font-size: 1.2em; /* 14px * 1.2 = 16.8px */
+      font-weight: bold;
+      padding: 2em;     /* 16.8px * 2 = 33.6px */
+      background-color: rgba(0, 255, 85, 0.2);
+    }
+    .box1 { background-color: rgba(255, 0, 0, 0.2); }
+    .box2 { background-color: rgba(255, 0, 0, 0.6); }
+    .box3 { background-color: rgba(255, 0, 0, 0.8); }
+
+
+    .srem {
+      font-size: 1.2rem; /* html font-size: 14px * 1.2 = 16.8px */
+      font-weight: bold;
+      padding: 2em;
+      text-align: center;
+    }
+    .box4 { background-color: rgba(0, 255, 85, 0.2); }
+    .box5 { background-color: rgba(0, 255, 85, 0.6); }
+    .box6 { background-color: rgba(0, 255, 85, 0.8); }
+
+    </style>
+</head>
+<body>
+  <!--px로 사이즈 표기-->
+  <div class="spx">Font size: 14px</div>
+  <!--%로 사이즈 표기-->
+  <div class="sper">Font size: 14px * 120% → 16.8px</div>
+  <!--em으로 사이즈 표기-->
+  <div class="sem">Font size: 1.2em → 14px * 1.2 = 16.8px</div>
+  <!--중첩된 em으로 사이즈 표기, 이렇게 될 수 있으므로 주의해야 한다.-->
+  <div class='sem box1'>
+    Font size: 1.2em ⇒ 14px * 1.2 = 16.8px
+    <div class='sem box2'>
+      Font size: 1.2em ⇒ 16.8px * 1.2 = 20.16px
+      <div class='sem box3'>
+        Font size: 1.2em ⇒ 20.16px * 1.2 = 24.192px
+      </div>
+    </div>
+  </div>
+  <!--rem으로 사이즈 표기-->
+  <div class='box4 srem'>
+    Font size: 1.2rem ⇒ 14px * 1.2 = 16.8px
+    <div class='box5 srem'>
+      Font size: 1.2rem ⇒ 14px * 1.2 = 16.8px
+      <div class='box6 srem'>
+        Font size: 1.2rem ⇒ 14px * 1.2 = 16.8px
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
