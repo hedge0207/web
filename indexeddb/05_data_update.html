@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>IndexedDB Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+<body>
+    <h1>indexedDB data update</h1>
+
+<script>
+    const customerData = [
+        { ssn: "444-44-4444", name: "Bill", age: 35, email: "bill@company.com" },
+        { ssn: "555-55-5555", name: "Donna", age: 32, email: "donna@home.org" }
+    ];
+
+    var db;
+
+    var request = window.indexedDB.open("MyTestDatabase",2)
+
+
+    request.onerror = function(event){
+        alert("Database error: " + event.target.errorCode);
+    }
+
+    request.onsuccess = function(event){
+        db = request.result
+        console.log(db)
+    }
+
+    request.onupgradeneeded = function(event){
+        var db = event.target.result;
+
+        var objectStore = db.createObjectStore("customers", { keyPath: "ssn" });
+        console.log(objectStore)
+
+        objectStore.createIndex("name", "name", { unique: false });
+
+        objectStore.createIndex("email", "email", { unique: true });
+
+        objectStore.transaction.oncomplete = function(event){
+
+            //데이터를 넣고
+            var customerObjectStore = db.transaction(["customers"],"readwrite").objectStore("customers")
+            customerData.forEach(function(customer){
+                customerObjectStore.add(customer)
+            })
+
+            //데이터 수정
+            var objectStore = db.transaction(["customers"], "readwrite").objectStore("customers");
+            var request = objectStore.get("555-55-5555");
+            request.onerror = function(event) {
+                console.log("Error!!! when get data from objectStore")
+            };
+
+            request.onsuccess = function(event) {
+                // 수정하고자 하는 값을 data에 넣는다.
+                var data = event.target.result;
+
+                // 수정한다.
+                data.age = 152;
+
+                // 수정된 객체를 다시 객체 저장소에 넣는다.
+                var requestUpdate = objectStore.put(data);
+                requestUpdate.onerror = function(event) {
+                    console.log("Error!!! when put data to objectStore")
+                };
+                requestUpdate.onsuccess = function(event) {
+                    console.log("data is successfully updated!!!")
+                };
+            };
+
+        }
+    }
+
+</script>
+</body>
+</html>

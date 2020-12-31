@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>IndexedDB Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+<body>
+    <h1>indexedDB data add</h1>
+
+<script>
+    //indexedDB에 저장할 고객 데이터의 예시, 실제로 아래 list를 넣는 것이 아니다. 예시일 뿐이다.
+    const customerData = [
+        { ssn: "444-44-4444", name: "Bill", age: 35, email: "bill@company.com" },
+        { ssn: "555-55-5555", name: "Donna", age: 32, email: "donna@home.org" }
+    ];
+
+    var db;
+
+    var request = window.indexedDB.open("MyTestDatabase",2)
+
+
+    request.onerror = function(event){
+        alert("Database error: " + event.target.errorCode);
+    }
+
+    request.onsuccess = function(event){
+        db = request.result
+        console.log(db)
+    }
+
+    request.onupgradeneeded = function(event){
+        var db = event.target.result;
+
+        //ssn은 유일한 값임이 보장되므로 keyPath로 사용한다.
+        var objectStore = db.createObjectStore("customers", { keyPath: "ssn" });
+        console.log(objectStore)
+
+        //고객을 이름으로 찾기 위해 인덱스를 생성한다. 이름은 겹칠 수 있으므로 unique 인덱스를 사용하지 않는다.
+        objectStore.createIndex("name", "name", { unique: false });
+
+        //고객을 이메일로 찾기 위한 인덱스를 생성한다. 이메일은 겹칠 수 없으므로 unique 인덱스를 사용한다.
+        objectStore.createIndex("email", "email", { unique: true });
+
+        //데이터가 객체 저장소에 들어가기 전에 객체 저장소가 미리 생성되어 있도록 하기 위해 transaction.oncomplete를 사용한다.
+        objectStore.transaction.oncomplete = function(event){
+
+            //데이터 추가
+            // transaction() 함수를 사용한다.첫 번째 인자는 확장될 객체 저장소의 목록으로 모든 객체 저장소의 트랜잭션을 확장하고자 한다면 빈 배열을 넘기면 된다.
+            // 두 번째 인자는 readonly, readwrite, versionchange 중 하나를 넘기면 된다. 아무것도 넘기지 않을 경우 readonly가 기본값으로 설정된다.
+            var customerObjectStore = db.transaction(["customers"],"readwrite").objectStore("customers")
+            customerData.forEach(function(customer){
+                customerObjectStore.add(customer)
+            })
+            
+            // 위 과정을 풀어서 쓰면 다음과 같다.
+            // c뿐 아니라 rud 모두 아래와 같이 풀어 쓰거나 위 처럼 축약해서 쓸 수 있다.
+            // var transaction = db.transaction(["customers"], "readwrite")
+            
+            // transaction.oncomplete = function(evt) {
+            //     alert("All done!");
+            // };
+
+            // transaction.onerror = function(evt) {
+            //     alert("error!!")
+            // };
+
+            // var objectStore = transaction.objectStore("customers");
+            // for (var i in customerData) {
+            //     var request = objectStore.add(customerData[i]);
+            //     request.onsuccess = function(event) {
+            //     };
+            // }
+            
+
+            //데이터 삭제
+           var request = db.transaction(["customers"], "readwrite").objectStore("customers").delete("444-44-4444")
+
+            request.onsuccess = function(event){
+                console.log("지워졌습니다!!")
+            }
+
+            request.onerror = function(event){
+                console.log("지우지 못했습니다....")
+            }
+
+
+            //데이터 조회
+            var transaction = db.transaction(["customers"])  //위에도 말했듯 2번째 인자를 넘기지 않으면 readonly가 기본값이다.
+            var objectStore = transaction.objectStore("customers")
+            var reqeust = objectStore.get("555-55-5555")
+            
+            request.onsuccess = function(event){
+                console.log("Name for SSN 555-55-5555: " + request.result.name)
+            }
+
+            //데이터 수정
+            var objectStore = db.transaction(["customers"], "readwrite").objectStore("customers");
+            var request = objectStore.get("555-55-5555");
+            request.onerror = function(event) {
+                console.log("Error!!! when get data from objectStore")
+            };
+
+            request.onsuccess = function(event) {
+                // 수정하고자 하는 값을 data에 넣는다.
+                var data = event.target.result;
+
+                // 수정한다.
+                data.age = 152;
+
+                // 수정된 객체를 다시 객체 저장소에 넣는다.
+                var requestUpdate = objectStore.put(data);
+                requestUpdate.onerror = function(event) {
+                    console.log("Error!!! when put data to objectStore")
+                };
+                requestUpdate.onsuccess = function(event) {
+                    console.log("data is successfully updated!!!")
+                };
+            };
+
+        }
+    }
+
+</script>
+</body>
+</html>
