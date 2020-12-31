@@ -9,7 +9,6 @@
 </head>
 <body>
     <h1>indexedDB data read</h1>
-
 <script>
 
     const customerData = [
@@ -48,8 +47,11 @@
             customerData.forEach(function(customer){
                 customerObjectStore.add(customer)
             })
+            
 
-            //데이터 조회
+            // 아래 소개한 방법들 외에 더 구체적으로 조회하는 방법이 존재하는데 이는 아래 링크 참조
+            //https://developer.mozilla.org/ko/docs/Web/API/IndexedDB_API/Using_IndexedDB#Indexed_DB_%EC%9D%98_%EC%8B%A4%ED%97%98%EC%A0%81%EC%9D%B8_%EB%B2%84%EC%A0%84%EC%9D%84_%EC%82%AC%EC%9A%A9%ED%95%B4%EB%B3%B4%EA%B8%B0
+            // 단일 데이터 조회(get을 사용하여 key로 조회하기)
             var transaction = db.transaction(["customers"])  //2번째 인자를 넘기지 않으면 readonly가 기본값이다.
             var objectStore = transaction.objectStore("customers")
             var request = objectStore.get("555-55-5555")  //key를 통해 조회 한다.
@@ -57,6 +59,33 @@
             request.onsuccess = function(event){
                 console.log("Name for SSN 555-55-5555: " + request.result.name)
             }
+
+            // 단일 데이터 조회(get을 사용하여 index로 조회하기)
+            var index = objectStore.index("name");
+
+            index.get("Donna").onsuccess = function(event) {
+                alert("Donna's SSN is " + event.target.result.ssn);
+            };
+
+            // 모든 데이터 조회(openCursor 사용)
+            var objectStore = db.transaction("customers").objectStore("customers")
+            // openCursor 메서드는 첫 번째 인자로 얼마나 조회할 것인지를 받고, 두 번째 인자로 오름 차순으로 할지 내림 차순으로 할지를 정할 수 있다.
+            objectStore.openCursor().onsuccess = function(event) {
+                var cursor = event.target.result;
+                if (cursor) {
+                    alert("Name for SSN " + cursor.key + " is " + cursor.value.name);
+                    cursor.continue();
+                }
+                else {
+                    alert("No more entries!");
+                }
+            };
+
+            // 모든 데이터 조회(gettAll 사용)
+            //getAll은 IndexedDB의 표준은 아니다.
+            objectStore.getAll().onsuccess = function(event) {
+                alert("Got all customers: " + event.target.result);
+            };
 
         }
     }
