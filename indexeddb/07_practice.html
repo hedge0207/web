@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>IndexedDB</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+<body>
+
+    <!--https://romeoh.tistory.com/entry/indexed-db 참고-->
+    name: <input type="text" id="name"><br>
+    nickname: <input type="text" id="nickname"><br>
+    <button id="submit">제출하기</button>
+    <button id="clearAll">모두삭제</button>
+
+    <ul id="lists"></ul>
+
+<script>
+    const databaseName = 'MyDatabase';
+    const databaseVersion = 1;
+    const databaseStoreName = 'UserInfo';
+
+    var db;
+
+    openDB = () => {
+        // DB 생성
+        var req = indexedDB.open(databaseName, databaseVersion);
+
+        // DB 생성 성공시
+        req.onsuccess = function (event) {
+            db = this.result;
+        };
+
+        // DB 생성 실패시
+        req.onerror = function (event) {
+            console.error("indexedDB : ", event.target.errorCode);
+        };
+
+        // DB 마이그레이션
+        req.onupgradeneeded = function (event) {
+            console.log("indexedDB.onupgradeneeded");
+            var objectStore = event.currentTarget.result.createObjectStore(databaseStoreName,
+                { keyPath: 'id', autoIncrement: true });
+
+            objectStore.createIndex('userId', 'userId', { unique: true });
+            objectStore.createIndex('age', 'age', { unique: false });
+            objectStore.createIndex('gender', 'gender', { unique: false });
+        };
+    }
+    
+    openDB()
+
+    //Store에 데이터 추가
+    //데이터를 추가 할 Store를 반환하는 함수
+    getObjectStore = (store_name, mode) => {
+        return db.transaction(store_name, mode).objectStore(store_name);
+    }
+
+    $('#submit').on('click',()=>{
+        const name = $('#name').val()
+        const nickname = $('#nickname').val()
+        if(!name){
+            return alert('name을 입력해 주십시오.')
+        }
+        if(!nickname){
+            return alert('nickname을 입력해 주십시오.')
+        }
+
+        let store = getObjectStore(databaseStoreName, 'readwrite')
+        let request
+        const added_object = {
+            name: name,
+            nickname: nickname
+        }
+
+        try {
+            request = store.add(added_object)
+        } catch(error){
+            console.log(error)
+        }
+
+        request.onsuccess = function(event){
+            console.log("입력이 완료되었습니다.")
+        }
+
+        request.onerror = function(){
+            console.error(this.error)
+        }
+    })
+
+    //모든 데이터를 가져오는 함수
+    getAllData = () => {
+        store = getObjectStore(databaseStoreName,'readonly')
+        let request = store.openCursor()
+        let strBuffer = []
+        request.onsuccess = function (event) {
+            const cursor = event.target.result
+            if (cursor){
+                request = store.get(cursor.key)
+                request.onsuccess = event => {
+                    const value = event.target.result
+                    console.log(value)
+                    strBuffer.push('<li>')
+                    strBuffer.push(value.name + ' (' + value.nickname + ')')
+                    strBuffer.push(' [<a href="#" data-delete="' + value.id + '">삭제</a>]')
+                    strBuffer.push('</li>')
+                }
+                cursor.continue()
+            }
+            $('#lists').html(strBuffer.join(''))
+
+
+            // 데이터 1개 삭제하기
+            $('[data-delete]').on('click',event=>{
+                const id = $(event.currentTarget).attr('data-delete')
+                console.log(typeof id)
+                store = getObjectStore(databaseStoreName, 'readwrite')
+                store.delete(id*1).onsuccess = function (evt) {
+                    console.log('삭제됨')
+                }
+            })
+        }
+
+        //모든 데이터 삭제
+        $('#clearAll').on('click', () => {
+            var store = getObjectStore(databaseStoreName, 'readwrite');
+            var req = store.clear();
+            req.onsuccess = function (event) {
+                console.log('모든 데이터가 삭제되었습니다.')
+            };
+            req.onerror = function (event) {
+                console.log('모든 데이터를 삭제하는 것에 실패했습니다.')
+            };
+        })
+    }
+
+</script>
+</body>
+</html>
