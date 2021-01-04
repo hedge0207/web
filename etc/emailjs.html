@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Contact Form</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/emailjs-com@2/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            // https://dashboard.emailjs.com/admin/integration
+            emailjs.init('user_wqqwfqwgwegrgewt');  //YOUR_USER_ID에는 위 사이트에 나와 있는 값을 넣으면 된다(이 코드에 있는 값은 무작위 값).
+        })();
+    </script>
+    <script type="text/javascript">
+        window.onload = function() {
+            document.getElementById('contact-form').addEventListener('submit', function(event) {
+                event.preventDefault();
+                // generate a five digit number for the contact_number variable
+                this.contact_number.value = Math.random() * 100000 | 0;
+                // these IDs from the previous steps
+                //emailjs는 지정한 양식 대로 email을 보내는 sendForm() 메서드와
+                //미리 준비한 텍스트를 보내는 send() 메서드를 지원한다.
+                //'contact_service'와 'contact_form'에는 위 사이트에 나와 있는 값을 넣으면 된다(이 코드에 있는 값은 무작위 값).
+                emailjs.sendForm('service_fdsf3as', 'template_asf2agg', this)  //this에는 보낼 객체가 담겨있다.
+                    .then(function() {
+                        console.log('SUCCESS!');
+                    }, function(error) {
+                        console.log('FAILED...', error);
+                    });
+            });
+        }
+    </script>
+</head>
+<body>
+    <form id="contact-form">
+        <input type="hidden" name="contact_number">
+        <label>Name</label>
+        <input type="text" name="name">  <!--name="email 템플릿에서 작성한 변수명"-->
+        <label>Email</label>
+        <input type="email" name="email"> <!--name="email 템플릿에서 작성한 변수명"-->
+        <label>Message</label>
+        <textarea name="message"></textarea>  <!--name="email 템플릿에서 작성한 변수명"-->
+        <input type="submit" value="Send">
+    </form>
+</body>
+</html>
