@@ -73,52 +73,6 @@
             //     request.onsuccess = function(event) {
             //     };
             // }
-            
-
-            //데이터 삭제
-           var request = db.transaction(["customers"], "readwrite").objectStore("customers").delete("444-44-4444")
-
-            request.onsuccess = function(event){
-                console.log("지워졌습니다!!")
-            }
-
-            request.onerror = function(event){
-                console.log("지우지 못했습니다....")
-            }
-
-
-            //데이터 조회
-            var transaction = db.transaction(["customers"])  //위에도 말했듯 2번째 인자를 넘기지 않으면 readonly가 기본값이다.
-            var objectStore = transaction.objectStore("customers")
-            var reqeust = objectStore.get("555-55-5555")
-            
-            request.onsuccess = function(event){
-                console.log("Name for SSN 555-55-5555: " + request.result.name)
-            }
-
-            //데이터 수정
-            var objectStore = db.transaction(["customers"], "readwrite").objectStore("customers");
-            var request = objectStore.get("555-55-5555");
-            request.onerror = function(event) {
-                console.log("Error!!! when get data from objectStore")
-            };
-
-            request.onsuccess = function(event) {
-                // 수정하고자 하는 값을 data에 넣는다.
-                var data = event.target.result;
-
-                // 수정한다.
-                data.age = 152;
-
-                // 수정된 객체를 다시 객체 저장소에 넣는다.
-                var requestUpdate = objectStore.put(data);
-                requestUpdate.onerror = function(event) {
-                    console.log("Error!!! when put data to objectStore")
-                };
-                requestUpdate.onsuccess = function(event) {
-                    console.log("data is successfully updated!!!")
-                };
-            };
 
         }
     }
