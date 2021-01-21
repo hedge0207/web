@@ -112,19 +112,53 @@
 
 
 
+// function Person(name) {
+//     this.name = name
+// }
+
+// Person.prototype.age = 28
+
+// var cha = new Person('Cha')
+// var kim = new Person('Kim')
+
+// console.log(cha.age)
+// console.log(kim.age)
+
+// cha.age = 20
+
+// console.log(cha.age)
+// console.log(kim.age)
+
+
+// function Person(name){
+//     this.name = name
+// }
+
+// var cha = new Person('Cha')
+
+// console.log(Function.prototype.__proto__ === Object.prototype) // true
+// console.log(Person.prototype.constructor === Person)           // true
+// console.log(Person.__proto__ === Function.prototype)           // true
+// console.log(cha.__proto__ === Person.prototype)                // true
+
+// // 둘은 다르다!!
+// console.log(Person.prototype === Person.prototype)   // true
+// console.log(Person.__proto__ === Function.prototype)   // true
+
+
 function Person(name) {
     this.name = name
+    this.foo = function(){
+        console.log('this method')
+    }
 }
 
-Person.prototype.age = 28
 
-var cha = new Person('Cha')
-var kim = new Person('Kim')
+console.log(Person)
+Person.bar = function(){
+    console.log("bar method")
+}
+console.log(typeof Person)
+var cha = new Person()
 
-console.log(cha.age)
-console.log(kim.age)
-
-cha.age = 20
-
-console.log(cha.age)
-console.log(kim.age)
+cha.bar()
