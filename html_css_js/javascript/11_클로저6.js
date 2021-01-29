@@ -40,5 +40,3 @@
 // for (var j = 0; j < arr.length; j++) {
 //   console.log(arr[j]())
 // }
-
-
